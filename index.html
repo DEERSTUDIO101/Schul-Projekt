@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
 </head>
 <body>
     <div id="app">
@@ -24,12 +28,85 @@
             </div>
         </div>
 
+        <!-- Login/Register Screen -->
+        <div id="auth-screen" class="screen hidden">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <div class="auth-logo">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h1>Willkommen bei LernApp</h1>
+                    <p>Erstelle dein Konto oder melde dich an</p>
+                </div>
+
+                <!-- Login Form -->
+                <div id="login-form" class="auth-form">
+                    <h2>Anmelden</h2>
+                    <div class="form-group">
+                        <label for="login-username">Benutzername</label>
+                        <input type="text" id="login-username" placeholder="Dein Benutzername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Passwort</label>
+                        <input type="password" id="login-password" placeholder="Dein Passwort" required>
+                    </div>
+                    <button class="auth-btn primary" onclick="app.login()">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Anmelden
+                    </button>
+                    <div class="auth-switch">
+                        <p>Noch kein Konto? <a href="#" onclick="app.showRegisterForm()">Registrieren</a></p>
+                    </div>
+                </div>
+
+                <!-- Register Form -->
+                <div id="register-form" class="auth-form hidden">
+                    <h2>Registrieren</h2>
+                    <div class="form-group">
+                        <label for="register-username">Benutzername</label>
+                        <input type="text" id="register-username" placeholder="Wähle einen Benutzernamen" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Passwort</label>
+                        <input type="password" id="register-password" placeholder="Wähle ein Passwort" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm">Passwort bestätigen</label>
+                        <input type="password" id="register-confirm" placeholder="Passwort wiederholen" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-grade">Klasse</label>
+                        <select id="register-grade" required>
+                            <option value="">Klasse wählen</option>
+                            <option value="1">Klasse 1</option>
+                            <option value="2">Klasse 2</option>
+                            <option value="3">Klasse 3</option>
+                            <option value="4">Klasse 4</option>
+                            <option value="5">Klasse 5</option>
+                            <option value="6">Klasse 6</option>
+                            <option value="7">Klasse 7</option>
+                            <option value="8">Klasse 8</option>
+                            <option value="9">Klasse 9</option>
+                            <option value="10">Klasse 10</option>
+                        </select>
+                    </div>
+                    <button class="auth-btn primary" onclick="app.register()">
+                        <i class="fas fa-user-plus"></i>
+                        Registrieren
+                    </button>
+                    <div class="auth-switch">
+                        <p>Bereits ein Konto? <a href="#" onclick="app.showLoginForm()">Anmelden</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Menu -->
         <div id="main-menu" class="screen hidden">
             <div class="menu-header">
                 <h1><i class="fas fa-graduation-cap"></i> LernApp</h1>
                 <div class="user-info">
-                    <div class="avatar">
+                    <div class="avatar" id="user-avatar">
                         <i class="fas fa-user"></i>
                     </div>
                     <div class="user-details">
@@ -40,6 +117,14 @@
                                 <div class="xp-progress" style="width: 0%"></div>
                             </div>
                         </div>
+                    </div>
+                    <div class="user-controls">
+                        <button class="profile-btn" onclick="app.showProfile()" title="Profil">
+                            <i class="fas fa-user-cog"></i>
+                        </button>
+                        <button class="logout-btn" onclick="app.logout()" title="Abmelden">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -79,10 +164,152 @@
             </div>
         </div>
 
+        <!-- Profile Personalization -->
+        <div id="profile-screen" class="screen hidden">
+            <div class="profile-header">
+                <button class="back-btn" onclick="showMainMenu()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2>Profil Personalisierung</h2>
+                <button class="theme-toggle" onclick="app.toggleTheme()" title="Theme wechseln">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </button>
+            </div>
+
+            <div class="profile-content">
+                <!-- Avatar Section -->
+                <div class="profile-section">
+                    <h3><i class="fas fa-user-circle"></i> Avatar</h3>
+                    <div class="avatar-upload">
+                        <div class="avatar-preview" id="avatar-preview">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                        <button class="upload-btn" onclick="document.getElementById('avatar-input').click()">
+                            <i class="fas fa-upload"></i>
+                            Bild hochladen
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Background Section -->
+                <div class="profile-section">
+                    <h3><i class="fas fa-palette"></i> Hintergrund</h3>
+                    
+                    <!-- Color Presets -->
+                    <div class="background-options">
+                        <h4>Farben</h4>
+                        <div class="color-presets">
+                            <div class="color-preset" data-color="gradient-blue" onclick="app.setBackground('gradient-blue')">
+                                <div class="color-preview gradient-blue"></div>
+                                <span>Blau</span>
+                            </div>
+                            <div class="color-preset" data-color="gradient-purple" onclick="app.setBackground('gradient-purple')">
+                                <div class="color-preview gradient-purple"></div>
+                                <span>Lila</span>
+                            </div>
+                            <div class="color-preset" data-color="gradient-green" onclick="app.setBackground('gradient-green')">
+                                <div class="color-preview gradient-green"></div>
+                                <span>Grün</span>
+                            </div>
+                            <div class="color-preset" data-color="gradient-orange" onclick="app.setBackground('gradient-orange')">
+                                <div class="color-preview gradient-orange"></div>
+                                <span>Orange</span>
+                            </div>
+                            <div class="color-preset" data-color="gradient-pink" onclick="app.setBackground('gradient-pink')">
+                                <div class="color-preview gradient-pink"></div>
+                                <span>Pink</span>
+                            </div>
+                            <div class="color-preset" data-color="gradient-red" onclick="app.setBackground('gradient-red')">
+                                <div class="color-preview gradient-red"></div>
+                                <span>Rot</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Background Image -->
+                    <div class="background-options">
+                        <h4>Eigenes Bild</h4>
+                        <div class="image-upload">
+                            <input type="file" id="bg-image-input" accept="image/*" style="display: none;">
+                            <button class="upload-btn" onclick="document.getElementById('bg-image-input').click()">
+                                <i class="fas fa-image"></i>
+                                Hintergrundbild hochladen
+                            </button>
+                            <button class="remove-btn" onclick="app.removeBackgroundImage()">
+                                <i class="fas fa-trash"></i>
+                                Bild entfernen
+                            </button>
+                        </div>
+                        <div class="background-preview" id="bg-preview">
+                            <p>Kein Bild ausgewählt</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Theme Section -->
+                <div class="profile-section">
+                    <h3><i class="fas fa-adjust"></i> Theme</h3>
+                    <div class="theme-options">
+                        <div class="theme-option" onclick="app.setTheme('light')">
+                            <div class="theme-preview light-theme">
+                                <div class="theme-demo">
+                                    <div class="demo-header"></div>
+                                    <div class="demo-content"></div>
+                                </div>
+                            </div>
+                            <span>Light Mode</span>
+                        </div>
+                        <div class="theme-option" onclick="app.setTheme('dark')">
+                            <div class="theme-preview dark-theme">
+                                <div class="theme-demo">
+                                    <div class="demo-header"></div>
+                                    <div class="demo-content"></div>
+                                </div>
+                            </div>
+                            <span>Dark Mode</span>
+                        </div>
+                        <div class="theme-option" onclick="app.setTheme('auto')">
+                            <div class="theme-preview auto-theme">
+                                <div class="theme-demo">
+                                    <div class="demo-header"></div>
+                                    <div class="demo-content"></div>
+                                </div>
+                            </div>
+                            <span>Auto</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="profile-actions">
+                    <button class="save-btn" onclick="app.saveProfileSettings()">
+                        <i class="fas fa-save"></i>
+                        Einstellungen speichern
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subject Selection -->
+        <div id="subject-selection" class="screen hidden">
+            <div class="subject-header">
+                <button class="back-btn" onclick="showMainMenu()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2>Wähle dein Fach</h2>
+                <p>Entscheide dich für ein Fach und starte dein Lernabenteuer!</p>
+            </div>
+
+            <div class="subjects-grid" id="subject-grid">
+                <!-- Subjects will be generated here -->
+            </div>
+        </div>
+
         <!-- Level Selection -->
         <div id="level-selection" class="screen hidden">
             <div class="level-header">
-                <button class="back-btn" onclick="showMainMenu()">
+                <button class="back-btn" onclick="backToSubjects()">
                     <i class="fas fa-arrow-left"></i>
                 </button>
                 <h2>Wähle dein Level</h2>
@@ -175,6 +402,13 @@
         </div>
     </div>
 
+    <!-- Subject Files -->
+    <script src="mathematik.js"></script>
+    <script src="deutsch.js"></script>
+    <script src="englisch.js"></script>
+    
+    <!-- Main App -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
