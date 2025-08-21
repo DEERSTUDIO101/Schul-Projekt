@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LernApp - Spielerisch Lernen</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="loading-screen">
+            <div class="loading-content">
+                <div class="loading-logo">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h1>LernApp</h1>
+                <div class="loading-bar">
+                    <div class="loading-progress"></div>
+                </div>
+                <p>Lade dein Lernabenteuer...</p>
+            </div>
+        </div>
+
+        <!-- Main Menu -->
+        <div id="main-menu" class="screen hidden">
+            <div class="menu-header">
+                <h1><i class="fas fa-graduation-cap"></i> LernApp</h1>
+                <div class="user-info">
+                    <div class="avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="username">Spieler</span>
+                        <div class="level-info">
+                            <span class="level">Level 1</span>
+                            <div class="xp-bar">
+                                <div class="xp-progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-content">
+                <div class="menu-buttons">
+                    <button class="menu-btn primary" onclick="startGame()">
+                        <i class="fas fa-play"></i>
+                        <span>Spielen</span>
+                    </button>
+                    <button class="menu-btn secondary" onclick="showSubjects()">
+                        <i class="fas fa-book"></i>
+                        <span>Fächer</span>
+                    </button>
+                    <button class="menu-btn secondary" onclick="showProgress()">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Fortschritt</span>
+                    </button>
+                    <button class="menu-btn secondary" onclick="showSettings()">
+                        <i class="fas fa-cog"></i>
+                        <span>Einstellungen</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="menu-footer">
+                <div class="stats">
+                    <div class="stat">
+                        <i class="fas fa-star"></i>
+                        <span id="total-stars">0</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-trophy"></i>
+                        <span id="achievements">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Level Selection -->
+        <div id="level-selection" class="screen hidden">
+            <div class="level-header">
+                <button class="back-btn" onclick="showMainMenu()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2>Wähle dein Level</h2>
+                <div class="subject-info">
+                    <span id="current-subject">Mathematik</span>
+                </div>
+            </div>
+
+            <div class="levels-grid" id="levels-grid">
+                <!-- Levels will be generated here -->
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen hidden">
+            <div class="game-header">
+                <div class="game-info">
+                    <span class="level-number">Level 1</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="game-controls">
+                    <button class="control-btn" onclick="pauseGame()">
+                        <i class="fas fa-pause"></i>
+                    </button>
+                    <button class="control-btn" onclick="exitGame()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="game-content" id="game-content">
+                <!-- Game content will be generated here -->
+            </div>
+
+            <div class="game-footer">
+                <div class="score">
+                    <i class="fas fa-star"></i>
+                    <span id="current-score">0</span>
+                </div>
+                <div class="timer">
+                    <i class="fas fa-clock"></i>
+                    <span id="game-timer">00:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen hidden">
+            <div class="results-content">
+                <div class="results-header">
+                    <h2>Level Abgeschlossen!</h2>
+                    <div class="stars-earned">
+                        <i class="fas fa-star"></i>
+                        <span id="stars-earned">3</span>
+                    </div>
+                </div>
+
+                <div class="results-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Punkte</span>
+                        <span class="stat-value" id="final-score">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Zeit</span>
+                        <span class="stat-value" id="final-time">00:00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Genauigkeit</span>
+                        <span class="stat-value" id="accuracy">100%</span>
+                    </div>
+                </div>
+
+                <div class="results-buttons">
+                    <button class="btn primary" onclick="nextLevel()">
+                        <i class="fas fa-arrow-right"></i>
+                        Nächstes Level
+                    </button>
+                    <button class="btn secondary" onclick="retryLevel()">
+                        <i class="fas fa-redo"></i>
+                        Wiederholen
+                    </button>
+                    <button class="btn secondary" onclick="backToLevels()">
+                        <i class="fas fa-list"></i>
+                        Level Auswahl
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
