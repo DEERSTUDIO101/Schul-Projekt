@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LernApp - Spielerisch Lernen</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="loading-screen screen">
+            <div class="loading-content">
+                <div class="loading-logo">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h1>LernApp</h1>
+                <div class="loading-bar">
+                    <div class="loading-progress"></div>
+                </div>
+                <p>Lade dein Lernabenteuer...</p>
+            </div>
+        </div>
+        <!-- Login/Register Screen -->
+        <div id="auth-screen" class="screen hidden">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <div class="auth-logo">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h1>Willkommen bei LernApp</h1>
+                    <p>Erstelle dein Konto oder melde dich an</p>
+                </div>
+
+                <!-- Login Form -->
+                <div id="login-form" class="auth-form">
+                    <h2>Anmelden</h2>
+                    <div class="form-group">
+                        <label for="login-username">Benutzername</label>
+                        <input type="text" id="login-username" placeholder="Dein Benutzername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Passwort</label>
+                        <input type="password" id="login-password" placeholder="Dein Passwort" required>
+                    </div>
+                    <button class="auth-btn primary" onclick="app.login()">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Anmelden
+                    </button>
+                    <div class="auth-switch">
+                        <p>Noch kein Konto? <a href="#" onclick="app.showRegisterForm()">Registrieren</a></p>
+                    </div>
+                </div>
+
+                <!-- Register Form -->
+                <div id="register-form" class="auth-form hidden">
+                    <h2>Registrieren</h2>
+                    <div class="form-group">
+                        <label for="register-username">Benutzername</label>
+                        <input type="text" id="register-username" placeholder="Wähle einen Benutzernamen" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Passwort</label>
+                        <input type="password" id="register-password" placeholder="Wähle ein Passwort" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm">Passwort bestätigen</label>
+                        <input type="password" id="register-confirm" placeholder="Passwort wiederholen" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-grade">Klasse</label>
+                        <select id="register-grade" required>
+                            <option value="">Klasse wählen</option>
+                            <option value="7">Klasse 7</option>
+                            <option value="8">Klasse 8</option>
+                            <option value="9">Klasse 9</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <small style="color:#764ba2;font-size:0.95em;display:block;margin-top:8px;">
+                            Hinweis: Diese App ist aktuell auf die Klassen 7-9 und den Schulstoff der Förderschule Riesa (Sachsen) spezialisiert.
+                        </small>
+                    </div>
+                    <button class="auth-btn primary" onclick="app.register()">
+                        <i class="fas fa-user-plus"></i>
+                        Registrieren
+                    </button>
+                    <div class="auth-switch">
+                        <p>Bereits ein Konto? <a href="#" onclick="app.showLoginForm()">Anmelden</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Menu -->
+        <div id="main-menu" class="screen hidden">
+            <div class="menu-header">
+                <h1><i class="fas fa-graduation-cap"></i> LernApp</h1>
+                <div class="user-info">
+                    <div class="avatar" id="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="username">Spieler</span>
+                        <div class="level-info">
+                            <span class="level">Level 1</span>
+                            <div class="xp-bar">
+                                <div class="xp-progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-controls">
+                        <button class="profile-btn" onclick="app.showProfile()" title="Profil">
+                            <i class="fas fa-user-cog"></i>
+                        </button>
+                        <button class="logout-btn" onclick="app.logout()" title="Abmelden">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-content">
+                <div class="menu-buttons">
+                    <button class="menu-btn primary" onclick="startGame()">
+                        <i class="fas fa-play"></i>
+                        <span>Spielen</span>
+                    </button>
+                    <button class="menu-btn secondary" onclick="showSubjects()">
+                        <i class="fas fa-book"></i>
+                        <span>Fächer</span>
+                    </button>
+                    <button class="menu-btn secondary" onclick="showProgress()">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Fortschritt</span>
+                    </button>
+                    <button class="menu-btn secondary" onclick="showSettings()">
+                        <i class="fas fa-cog"></i>
+                        <span>Einstellungen</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="menu-footer">
+                <div class="stats">
+                    <div class="stat">
+                        <i class="fas fa-star"></i>
+                        <span id="total-stars">0</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-trophy"></i>
+                        <span id="achievements">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Personalization -->
+        <div id="profile-screen" class="screen hidden">
+            <div class="profile-header">
+                <button class="back-btn" onclick="showMainMenu()" title="Zurück zum Hauptmenü">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2>Profil Personalisierung</h2>
+                <button class="theme-toggle" onclick="app.toggleTheme()" title="Theme wechseln">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </button>
+            </div>
+
+            <div class="profile-content">
+                <!-- Avatar Section -->
+                <div class="profile-section">
+                    <h3><i class="fas fa-user-circle"></i> Avatar</h3>
+                    <div class="avatar-upload">
+                        <div class="avatar-preview" id="avatar-preview">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                        <button class="upload-btn" onclick="document.getElementById('avatar-input').click()">
+                            <i class="fas fa-upload"></i>
+                            Bild hochladen
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Background Section -->
+                <div class="profile-section">
+                    <h3><i class="fas fa-palette"></i> Hintergrund</h3>
+                    
+                    <!-- Color Presets -->
+                    <div class="background-options">
+                        <h4>Farben</h4>
+                        <div class="color-presets">
+                            <div class="color-preset" data-color="gradient-blue" onclick="app.setBackground('gradient-blue')">
+                                <div class="color-preview gradient-blue"></div>
+                                <span>Blau</span>
+                            </div>
+                            <div class="color-preset" data-color="gradient-purple" onclick="app.setBackground('gradient-purple')">
+                                <div class="color-preview gradient-purple"></div>
+                                <span>Lila</span>
+                            </div>
+                            <div class="color-preset" data-color="gradient-green" onclick="app.setBackground('gradient-green')">
+                                <div class="color-preview gradient-green"></div>
+                                <span>Grün</span>
+                            </div>
+                            <div class="color-preset" data-color="gradient-orange" onclick="app.setBackground('gradient-orange')">
+                                <div class="color-preview gradient-orange"></div>
+                                <span>Orange</span>
+                            </div>
+                            <div class="color-preset" data-color="gradient-pink" onclick="app.setBackground('gradient-pink')">
+                                <div class="color-preview gradient-pink"></div>
+                                <span>Pink</span>
+                            </div>
+                            <div class="color-preset" data-color="gradient-red" onclick="app.setBackground('gradient-red')">
+                                <div class="color-preview gradient-red"></div>
+                                <span>Rot</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Background Image -->
+                    <div class="background-options">
+                        <h4>Eigenes Bild</h4>
+                        <div class="image-upload">
+                            <input type="file" id="bg-image-input" accept="image/*" style="display: none;">
+                            <button class="upload-btn" onclick="document.getElementById('bg-image-input').click()">
+                                <i class="fas fa-image"></i>
+                                Hintergrundbild hochladen
+                            </button>
+                            <button class="remove-btn" onclick="app.removeBackgroundImage()">
+                                <i class="fas fa-trash"></i>
+                                Bild entfernen
+                            </button>
+                        </div>
+                        <div class="background-preview" id="bg-preview">
+                            <p>Kein Bild ausgewählt</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Theme Section -->
+                <div class="profile-section">
+                    <h3><i class="fas fa-adjust"></i> Theme</h3>
+                    <div class="theme-options">
+                        <div class="theme-option" onclick="app.setTheme('light')">
+                            <div class="theme-preview light-theme">
+                                <div class="theme-demo">
+                                    <div class="demo-header"></div>
+                                    <div class="demo-content"></div>
+                                </div>
+                            </div>
+                            <span>Light Mode</span>
+                        </div>
+                        <div class="theme-option" onclick="app.setTheme('dark')">
+                            <div class="theme-preview dark-theme">
+                                <div class="theme-demo">
+                                    <div class="demo-header"></div>
+                                    <div class="demo-content"></div>
+                                </div>
+                            </div>
+                            <span>Dark Mode</span>
+                        </div>
+                        <div class="theme-option" onclick="app.setTheme('auto')">
+                            <div class="theme-preview auto-theme">
+                                <div class="theme-demo">
+                                    <div class="demo-header"></div>
+                                    <div class="demo-content"></div>
+                                </div>
+                            </div>
+                            <span>Auto</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="profile-actions">
+                    <button class="save-btn" onclick="app.saveProfileSettings()">
+                        <i class="fas fa-save"></i>
+                        Einstellungen speichern
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subject Selection -->
+        <div id="subject-selection" class="screen hidden">
+            <div class="subject-header">
+                <button class="back-btn" onclick="showMainMenu()" title="Zurück zum Hauptmenü">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2>Wähle dein Fach</h2>
+                <p>Entscheide dich für ein Fach und starte dein Lernabenteuer!</p>
+            </div>
+
+            <div class="subjects-grid" id="subject-grid">
+                <!-- Subjects will be generated here -->
+            </div>
+        </div>
+
+        <!-- Level Selection -->
+        <div id="level-selection" class="screen hidden">
+            <div class="level-header">
+                <button class="back-btn" onclick="backToSubjects()" title="Zurück zur Fachauswahl">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2>Wähle dein Level</h2>
+                <div class="subject-info">
+                    <span id="current-subject">Englisch</span>
+                </div>
+            </div>
+
+            <div class="levels-grid" id="levels-grid">
+                <!-- Levels will be generated here -->
+            </div>
+        </div>
+
+        <!-- Progress Screen -->
+        <div id="progress-screen" class="screen hidden">
+            <div class="progress-header">
+                <button class="back-btn" onclick="showMainMenu()" title="Zurück zum Hauptmenü">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 id="progress-subject-title">Englisch</h2>
+                <div class="progress-nav">
+                    <button class="nav-arrow" onclick="app.previousSubject()" title="Vorheriges Fach">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="nav-divider"></div>
+                    <button class="nav-arrow" onclick="app.nextSubject()" title="Nächstes Fach">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <button class="progress-summary-btn" onclick="app.showProgressSummary()" title="Übersicht">
+                    <i class="fas fa-chart-bar"></i>
+                </button>
+            </div>
+            <div class="progress-content" id="progress-content">
+                <!-- Wird per JS gefüllt -->
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen hidden">
+            <div class="game-header">
+                <div class="game-info">
+                    <span class="level-number">Level 1</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="game-controls">
+                    <button class="control-btn" onclick="pauseGame()" title="Spiel pausieren">
+                        <i class="fas fa-pause"></i>
+                    </button>
+                    <button class="control-btn" onclick="exitGame()" title="Spiel beenden">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="game-content" id="game-content">
+                <!-- Game content will be generated here -->
+            </div>
+
+            <div class="game-footer">
+                <div class="score">
+                    <i class="fas fa-star"></i>
+                    <span id="current-score">0</span>
+                </div>
+                <div class="timer">
+                    <i class="fas fa-clock"></i>
+                    <span id="game-timer">00:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen hidden">
+            <div class="results-content">
+                <div class="results-header">
+                    <h2>Level Abgeschlossen!</h2>
+                    <div class="stars-earned">
+                        <i class="fas fa-star"></i>
+                        <span id="stars-earned">3</span>
+                    </div>
+                </div>
+
+                <div class="results-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Punkte</span>
+                        <span class="stat-value" id="final-score">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Zeit</span>
+                        <span class="stat-value" id="final-time">00:00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Genauigkeit</span>
+                        <span class="stat-value" id="accuracy">100%</span>
+                    </div>
+                </div>
+
+                <div class="results-buttons">
+                    <button class="btn primary" onclick="nextLevel()">
+                        <i class="fas fa-arrow-right"></i>
+                        Nächstes Level
+                    </button>
+                    <button class="btn secondary" onclick="retryLevel()">
+                        <i class="fas fa-redo"></i>
+                        Wiederholen
+                    </button>
+                    <button class="btn secondary" onclick="backToLevels()">
+                        <i class="fas fa-list"></i>
+                        Level Auswahl
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subject Files -->
+    <script src="english.js"></script>
+    
+    <!-- Main App -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="script.js"></script>
+    
+    <!-- Debug overlay -->
+    <script>
+        (function(){
+            const params = new URLSearchParams(location.search);
+            if (!params.has('debug')) return;
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;bottom:0;left:0;right:0;max-height:40vh;overflow:auto;background:rgba(0,0,0,0.85);color:#fff;font:12px/1.4 monospace;padding:8px;z-index:99999;';
+            overlay.id = 'debug-overlay';
+            const header = document.createElement('div');
+            header.textContent = 'Debug Console (append ?debug to URL)';
+            header.style.cssText = 'font-weight:700;margin-bottom:6px;color:#ffd700;';
+            overlay.appendChild(header);
+            const list = document.createElement('div');
+            overlay.appendChild(list);
+            const log = (level, msg) => {
+                const line = document.createElement('div');
+                line.style.margin = '2px 0';
+                line.innerHTML = `<span style="color:#999">[${level}]</span> ${msg}`;
+                list.appendChild(line);
+                overlay.scrollTop = overlay.scrollHeight;
+            };
+            const origError = console.error.bind(console);
+            const origWarn = console.warn.bind(console);
+            const origLog = console.log.bind(console);
+            console.error = (...args) => { log('error', args.map(a=>typeof a==='object'?JSON.stringify(a):String(a)).join(' ')); origError(...args); };
+            console.warn = (...args) => { log('warn', args.map(a=>typeof a==='object'?JSON.stringify(a):String(a)).join(' ')); origWarn(...args); };
+            console.log = (...args) => { log('log', args.map(a=>typeof a==='object'?JSON.stringify(a):String(a)).join(' ')); origLog(...args); };
+            window.addEventListener('error', (e) => {
+                log('window.onerror', `${e.message} at ${e.filename}:${e.lineno}:${e.colno}`);
+            });
+            window.addEventListener('unhandledrejection', (e) => {
+                log('promise', String(e.reason));
+            });
+            document.body.appendChild(overlay);
+        })();
+    </script>
+</body>
+</html>
